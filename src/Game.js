@@ -9,9 +9,16 @@ class Game {
     this.gameOver = false
     this.winner = false
     this.player = new Player(this)
-    this.aliens = [new Alien(this), new Alien(this), new Alien(this), new Alien(this), new Alien(this), new Alien(this), new Alien(this), new Alien(this)]
+    this.aliens = this.buildAliens(10)
     this.bullets = []
     this.ticks()
+  }
+  buildAliens(invasionForceCount) {
+    let invasionForce = []
+    for (var i = 0; i < invasionForceCount; i++) {
+      invasionForce.push(new Alien(this))
+    }
+    return invasionForce
   }
   draw () {
     context.clearRect(0, 0, 500, 500)

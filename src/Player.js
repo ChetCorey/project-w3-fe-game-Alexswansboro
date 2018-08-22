@@ -29,7 +29,7 @@ class Player {
       this.center.x += 2
       if (this.center.x >= 480) this.center.x = 480
     }
-    if (this.keyboarder.isDown(Keyboarder.KEYS.S)) {
+    if (this.keyboarder.isDown(Keyboarder.KEYS.SPACE)) {
       this.game.bullets.push(new Bullet(this.center.x))
     }
     this.game.aliens.forEach((alien) => {
