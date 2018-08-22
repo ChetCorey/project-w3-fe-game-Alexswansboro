@@ -16,7 +16,7 @@ class Keyboarder {
   }
 
   on (keyCode, callback) {
-    window.addEventListener('keydown', function (e) {
+    window.addEventListener('keypress', function (e) {
       if (e.keyCode === keyCode) {
         callback()
       }

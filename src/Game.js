@@ -1,66 +1,58 @@
-
 import Player from './player'
-import Alien from './alien'
+import Level from './level'
 import { context, screenSize } from './constants.js'
 import { getRandomColor } from './randomcolor'
 
 class Game {
   constructor () {
-    this.gameOver = false
+    this.isGameOver = false
     this.winner = false
     this.player = new Player(this)
-    this.aliens = this.buildAliens(10)
-    this.bullets = []
-    this.ticks()
+    this.levelNumber = 1
+    this.level = new Level(this, this.levelNumber)
+    this.aliens = this.level.aliens
+    this.start()
   }
-  buildAliens(invasionForceCount) {
-    let invasionForce = []
-    for (var i = 0; i < invasionForceCount; i++) {
-      invasionForce.push(new Alien(this))
-    }
-    return invasionForce
+  start () {
+    this.ticks ()
   }
   draw () {
     context.clearRect(0, 0, 500, 500)
-    this.bullets.forEach(function (bullet) {
-      bullet.draw()
-    })
-    this.aliens.forEach(function (alien) {
-      alien.draw()
-    })
     this.player.draw()
+    this.level.draw()
+  }
+  update () {
+    this.player.update()
+    this.level.update()
+  }
+  bigMessage (textColor, message) {
+    context.textAlign = 'center'
+    context.font = '48px Helvetica'
+    context.fillStyle = textColor
+    context.fillText(message, screenSize.x / 2, screenSize.y / 2)
+  }
+  gameOver () {
+    this.bigMessage('black', 'game over')
+  }
+  newLevel () {
+    this.bigMessage('black', `Level ${this.levelNumber}`)
+    this.bullets = this.player.newBullets()
+    setTimeout(() => {
+      this.levelNumber += 1
+      this.level = new Level(this, this.levelNumber)
+      this.ticks ()
+    },3000)
   }
   ticks () {
-    if (this.gameOver) {
-      context.textAlign = 'center'
-      context.font = '48px Helvetica'
-      context.fillStyle = 'black'
-      context.fillText('game over', screenSize.x / 2, screenSize.y / 2)
-    } else if (this.winner) {
-      context.textAlign = 'center'
-      context.font = '48px Helvetica'
-      context.fillStyle = getRandomColor()
-      context.fillText('WINNER', screenSize.x / 2, screenSize.y / 2)
+    if (this.isGameOver) {
+      this.gameOver()
+    } else if (this.level.complete) {
+      this.newLevel()
     } else {
       this.update()
       this.draw()
       window.requestAnimationFrame(() => this.ticks())
     }
-  }
-  update () {
-    this.player.update()
-    this.aliens.forEach((alien) => {
-      alien.update()
-    })
-    this.bullets.forEach(function (bullet) {
-      bullet.update()
-    })
-  }
-  stop () {
-    this.context.textAlign = 'center'
-    this.context.font = '48px Helvetica'
-    this.context.fillStyle = 'black'
-    this.context.fillText('game over', this.screenSize.x / 2, this.screenSize.y / 2)
   }
 }
 

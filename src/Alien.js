@@ -2,41 +2,39 @@ import { colliding } from './colliding.js/'
 import { context } from './constants.js'
 import { getRandomColor } from './randomcolor'
 class Alien {
-  constructor (game) {
-    this.center = {
-      x: Math.floor(Math.random() * 500),
-      y: 20
-    }
+  constructor (level) {
     this.size = {
       x: 20,
       y: 20
     }
-    this.game = game
+    this.center = {
+      x: Math.floor(Math.random() * (500 - this.size.x)),
+      y: 20
+    }
+    this.level = level
     this.color = getRandomColor()
-    this.speed = Math.random() * 1
+    this.alienDirection = Math.round(Math.random()) * 2 - 1
+    this.dropSpeed = this.newSpeed()
+    this.slideSpeed = this.newSpeed()
   }
   draw () {
     context.fillStyle = this.color
     context.fillRect(this.center.x, this.center.y, this.size.x, this.size.y)
   }
+  newSpeed () {
+    return (Math.random() * this.level.levelNumber)
+  }
   update () {
-    this.center.y += this.speed
+    this.center.y += this.dropSpeed
+    this.center.x += (this.slideSpeed * this.alienDirection)
     if (this.center.y >= 500) {
-      this.game.gameOver = true
+      this.center.y = 0
     }
-    this.game.bullets.forEach((bullet, bulletIndex) => {
-      this.game.aliens.forEach((alien, alienIndex) => {
-        if (colliding(alien, bullet)) {
-          this.game.aliens.splice(alienIndex, 1)
-        }
-        if (this.game.aliens.length < 3) {
-          this.game.aliens.push(new Alien())
-        }
-        if (this.game.aliens.length === 0) {
-          this.game.winner = true
-        }
-      })
-    })
+    if (this.center.x >= (500 - this.size.x)) {
+      this.alienDirection = -1
+    } else if (this.center.x <= 0) {
+      this.alienDirection = +1
+    }
   }
 }
 export default Alien
